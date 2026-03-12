@@ -20,20 +20,19 @@ class PurchaseService
     public function store($requestData)
     {
         $productData = $this->productRepository->getProductAndPrice($requestData['product_id']);
-        dd($productData);
-        $requestData['quantity'] = $productData['quantity'];
-        $requestData['amount']   = $productData['amount'];
-        $requestData['product']  = $productData['product'];
-
+        
+        $requestData['amount']  = $productData['amount'];
+        $requestData['product'] = $productData['product'];
+        
         $transaction = $this->transactionRepository->pendingTransaction($requestData);
-
+        
         return $this->checkPaymentMethod($transaction);
     }
 
     private function checkPaymentMethod($transaction)
     {
-        $paymentMethod = $transaction->method;
-
+        $paymentMethod = $transaction->payment_method;
+       
         return match ($paymentMethod) 
         {
             'card_credit', 'card_debit' => $this->processCardPayment($transaction),
@@ -51,9 +50,12 @@ class PurchaseService
                 2 => $this->gateway2Service,
             ];
 
-            foreach ($gatewaysToTry as $gatewayId => $gatewayService) {
-                if ($gatewayService->processPayment($transaction)) {
-                 
+            foreach ($gatewaysToTry as $gatewayId => $gatewayService) 
+            {
+                if ($gatewayService->processPayment($transaction)) 
+                {
+                    $transaction['gateway_id'] = $gatewayId;
+
                     $this->transactionRepository->successTransaction($transaction, $gatewayId);
                     return true;
                 }

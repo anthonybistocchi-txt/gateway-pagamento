@@ -22,7 +22,7 @@ class PurchaseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'quantity'          => 'required|integer|min:1',
+            'amount'            => 'required|integer|min:1',
             'client_id'         => 'required|integer|exists:clients,id',
             'product_id'        => 'required|integer|exists:products,id',
             'payment_method'    => 'required|string|in:card_credit,pix,boleto,card_debit',
@@ -33,21 +33,21 @@ class PurchaseRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'quantity.required'             => 'Quantity is required.',
-            'quantity.integer'              => 'Quantity must be an integer.',
-            'quantity.min'                  => 'Quantity must be at least 1.',
-            'client_id.required'            => 'Customer ID is required.',
-            'client_id.integer'             => 'Customer ID must be an integer.',
-            'client_id.exists'              => 'Customer ID does not exist.',
-            'product_id.required'           => 'Product ID is required.',
-            'product_id.integer'            => 'Product ID must be an integer.',
-            'product_id.exists'             => 'Product ID does not exist.',
-            'payment_method.required'       => 'Payment method is required.',
-            'payment_method.string'         => 'Payment method must be a string.',
-            'payment_method.in'             => 'Payment method must be one of: card_credit, pix, boleto, card_debit.',
-            'card_last_numbers.required_if' => 'Card last numbers are required when payment method is card_credit or card_debit.',
-            'card_last_numbers.string'      => 'Card last numbers must be a string.',
-            'card_last_numbers.size'        => 'Card last numbers must be exactly 4 characters.',
+            'amount.required'             => 'amount is required.',
+            'amount.integer'              => 'amount must be an integer.',
+            'amount.min'                  => 'amount must be at least 1.',
+            'client_id.required'            => 'client ID is required.',
+            'client_id.integer'             => 'client ID must be an integer.',
+            'client_id.exists'              => 'client ID does not exist.',
+            'product_id.required'           => 'product ID is required.',
+            'product_id.integer'            => 'product ID must be an integer.',
+            'product_id.exists'             => 'product ID does not exist.',
+            'payment_method.required'       => 'payment method is required.',
+            'payment_method.string'         => 'payment method must be a string.',
+            'payment_method.in'             => 'payment method must be one of: card_credit, pix, boleto, card_debit.',
+            'card_last_numbers.required_if' => 'card last numbers are required when payment method is card_credit or card_debit.',
+            'card_last_numbers.string'      => 'card last numbers must be a string.',
+            'card_last_numbers.size'        => 'card last numbers must be exactly 4 characters.',
         ];
     }
 }

@@ -11,5 +11,9 @@ class Transaction extends Model
         'gateway_id',
         'amount',
         'status',
+        'external_id',
+        'card_last_numbers',
+        'product_id',
+        'payment_method',
     ];
 }
