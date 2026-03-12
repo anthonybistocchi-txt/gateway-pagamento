@@ -16,10 +16,10 @@ class Gateway1Service implements PaymentRepositoryGatewayInterface
         $response = Http::withToken($token)
             ->post('http://gateways-mock:3001/transactions', [
                 'amount'     => $transaction->amount,
-                'name'       => 'Cliente BeTalent',      // $transaction->customer->name
-                'email'      => 'cliente@betalent.tech', // $transaction->customer->email
-                'cardNumber' => '556900000000' . $transaction->card_last_numbers,
-                'cvv'        => '010',
+                'name'       => $transaction->client->name,
+                'email'      => $transaction->client->email,
+                'cardNumber' => $transaction->card_number,
+                'cvv'        => $transaction->cvv,
             ]);
 
         if ($response->failed()) 
