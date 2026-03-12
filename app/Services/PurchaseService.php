@@ -2,62 +2,107 @@
 
 namespace App\Services;
 
-use App\Models\Product;
+use App\Interfaces\ProductRepositoryInterface;
+use App\Interfaces\TransactionRepositoryInterface;
 use App\Models\Transaction;
+use App\Services\Gateway1Service;
+use App\Services\Gateway2Service;
 
 class PurchaseService
 {
+    public function __construct(
+       protected TransactionRepositoryInterface $transactionRepository,
+       protected ProductRepositoryInterface $productRepository,
+       protected Gateway1Service $gateway1Service,
+       protected Gateway2Service $gateway2Service
+    ){}
+    
     public function store($requestData)
     {
-        $productData = $this->getProdutAndPrice($requestData['product_id']);
+        $productData = $this->productRepository->getProductAndPrice($requestData['product_id']);
+        dd($productData);
+        $requestData['quantity'] = $productData['quantity'];
+        $requestData['amount']   = $productData['amount'];
+        $requestData['product']  = $productData['product'];
 
-        $transaction = Transaction::create([
-            'customer_id'       => $requestData['customer_id'],
-            'product_id'        => $requestData['product_id'],
-            'amount'            => $productData['price'],
-            'method'            => $requestData['payment_method'],
-            'card_last_numbers' => $requestData['card_last_numbers'] ?? null,
-            'status'            => 'pending',
-        ]);
+        $transaction = $this->transactionRepository->pendingTransaction($requestData);
 
-        return $this->checkPaymentMethod(
-            $requestData['payment_method'],
-         $requestData['card_last_numbers'] ?? null,
-         $transaction
-        );
+        return $this->checkPaymentMethod($transaction);
     }
 
-    private function getProdutAndPrice($productId)
+    private function checkPaymentMethod($transaction)
     {
-        $product = Product::findOrFail($productId);
-        $price   = $product->price;
+        $paymentMethod = $transaction->method;
 
-        return [
-            'product' => $product,
-            'price'   => $price
-        ];
-    }
-
-    private function checkPaymentMethod($paymentMethod, $cardLastNumbers, $transaction)
-    {
         return match ($paymentMethod) 
         {
-            'card_credit', 'card_debit' => $this->processCardPayment($transaction,$cardLastNumbers),
+            'card_credit', 'card_debit' => $this->processCardPayment($transaction),
             'pix'                       => $this->processPixPayment($transaction),
             'boleto'                    => $this->processBoletoPayment($transaction),
             default                     => throw new \InvalidArgumentException('Invalid payment method.'),
         };
     }
 
-    private function processCardPayment($transaction,$cardLastNumbers)
+    private function processCardPayment(Transaction $transaction)
     {
-        // Simulate card payment processing
-        return true;
+        try {
+            $gatewaysToTry = [
+                1 => $this->gateway1Service,
+                2 => $this->gateway2Service,
+            ];
+
+            foreach ($gatewaysToTry as $gatewayId => $gatewayService) {
+                if ($gatewayService->processPayment($transaction)) {
+                 
+                    $this->transactionRepository->successTransaction($transaction, $gatewayId);
+                    return true;
+                }
+            }
+
+            $this->transactionRepository->failedTransaction($transaction);
+            throw new \Exception('Payment rejected by gateways.', 400);
+
+        } catch (\Exception $e) {
+
+            $this->transactionRepository->failedTransaction($transaction);
+            throw new \Exception('Payment system unavailable.', 500);
+        }
     }
+
+    public function processRefund(Transaction $transaction)
+    {
+        if ($transaction->status !== 'completed') {
+            throw new \Exception("Just transactions completed can be refund", 422);
+        }
+
+        $gatewayService = match ($transaction->gateway_id) 
+        {
+            1 => $this->gateway1Service,
+            2 => $this->gateway2Service,
+            default => throw new \Exception("Gateway not found", 400),
+        };
+
+        try {
+            $isRefunded = $gatewayService->refund($transaction);
+
+            if ($isRefunded) 
+            {
+                $this->transactionRepository->refundTransaction($transaction);
+                return true;
+            }
+
+            throw new \Exception('Gateway recused', 400);
+
+        } catch (\Exception $e) {
+            throw new \Exception('Error gateway: ' . $e->getMessage(), 500);
+        }
+    }
+
 
     private function processPixPayment($transaction)
     {
-        // Simulate Pix payment processing
+        $cardLastNumbers = $transaction->card_last_numbers;
+
         return true;
     }
 

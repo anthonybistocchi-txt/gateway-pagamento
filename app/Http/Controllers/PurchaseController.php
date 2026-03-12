@@ -10,7 +10,7 @@ class PurchaseController extends Controller
 {
     public function __construct(protected PurchaseService $purchaseService){}
     
-    public function newPurchase(PurchaseRequest $request): JsonResponse
+    public function store(PurchaseRequest $request): JsonResponse
     {
         $this->purchaseService->store($request->validated());
 

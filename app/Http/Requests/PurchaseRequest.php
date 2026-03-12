@@ -22,7 +22,8 @@ class PurchaseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'customer_id'       => 'required|integer|exists:customers,id',
+            'quantity'          => 'required|integer|min:1',
+            'client_id'         => 'required|integer|exists:clients,id',
             'product_id'        => 'required|integer|exists:products,id',
             'payment_method'    => 'required|string|in:card_credit,pix,boleto,card_debit',
             'card_last_numbers' => 'required_if:payment_method,card_credit,card_debit|string|size:4',
@@ -32,9 +33,12 @@ class PurchaseRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'customer_id.required'          => 'Customer ID is required.',
-            'customer_id.integer'           => 'Customer ID must be an integer.',
-            'customer_id.exists'            => 'Customer ID does not exist.',
+            'quantity.required'             => 'Quantity is required.',
+            'quantity.integer'              => 'Quantity must be an integer.',
+            'quantity.min'                  => 'Quantity must be at least 1.',
+            'client_id.required'            => 'Customer ID is required.',
+            'client_id.integer'             => 'Customer ID must be an integer.',
+            'client_id.exists'              => 'Customer ID does not exist.',
             'product_id.required'           => 'Product ID is required.',
             'product_id.integer'            => 'Product ID must be an integer.',
             'product_id.exists'             => 'Product ID does not exist.',
