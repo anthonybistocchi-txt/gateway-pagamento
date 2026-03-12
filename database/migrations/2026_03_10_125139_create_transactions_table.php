@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('external_id')->nullable();
             $table->enum('status', ['pending', 'completed', 'failed','refunded'])->default('pending');
             $table->integer('amount');
+            $table->string('quantity')->nullable();
             $table->enum('payment_method', ['card_credit', 'card_debit', 'pix', 'boleto']);
             $table->char('card_last_numbers', 4);
             $table->foreignId('product_id')->constrained()->onDelete('cascade');

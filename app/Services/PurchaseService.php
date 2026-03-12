@@ -19,13 +19,12 @@ class PurchaseService
     
     public function store($requestData)
     {
-        $productData = $this->productRepository->getProductAndPrice($requestData['product_id']);
+        $productData = $this->productRepository->getProductPrice($requestData['product_id']);
         
-        $requestData['amount']  = $productData['amount'];
-        $requestData['product'] = $productData['product'];
+        (int)$requestData['amount'] = $productData->amount;
         
         $transaction = $this->transactionRepository->pendingTransaction($requestData);
-        
+
         return $this->checkPaymentMethod($transaction);
     }
 
@@ -53,7 +52,7 @@ class PurchaseService
             foreach ($gatewaysToTry as $gatewayId => $gatewayService) 
             {
                 if ($gatewayService->processPayment($transaction)) 
-                {
+                {   
                     $transaction['gateway_id'] = $gatewayId;
 
                     $this->transactionRepository->successTransaction($transaction, $gatewayId);

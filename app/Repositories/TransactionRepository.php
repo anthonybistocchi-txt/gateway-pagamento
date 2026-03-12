@@ -10,10 +10,11 @@ class TransactionRepository implements TransactionRepositoryInterface
    public function pendingTransaction(array $requestData): Transaction
     {
         return Transaction::create([
+            'quantity'          => $requestData['quantity'],
             'client_id'         => $requestData['client_id'],
             'payment_method'    => $requestData['payment_method'] ?? null,
             'product_id'        => $requestData['product_id'],
-            'amount'            => $requestData['amount'],
+            'amount'            => (int)$requestData['amount'],
             'gateway_id'        => $requestData['gateway_id'] ?? 1,
             'external_id'       => $requestData['external_id'] ?? null,
             'card_last_numbers' => $requestData['card_last_numbers'] ?? null,

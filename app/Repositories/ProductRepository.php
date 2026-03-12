@@ -7,13 +7,9 @@ use App\Models\Product;
 
 class ProductRepository implements ProductRepositoryInterface
 {
-    public function getProductAndPrice($productId): array
+    public function getProductPrice($productId): Product
     {
-        $product = Product::findOrFail($productId);
+       return Product::select('amount')->findOrFail($productId);
 
-        return [
-            'product'  => $product,
-            'amount'   => $product->amount,
-        ];
     }
 }

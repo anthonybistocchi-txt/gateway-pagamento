@@ -22,7 +22,7 @@ class PurchaseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'amount'            => 'required|integer|min:1',
+            'quantity'          => 'required|integer',
             'client_id'         => 'required|integer|exists:clients,id',
             'product_id'        => 'required|integer|exists:products,id',
             'payment_method'    => 'required|string|in:card_credit,pix,boleto,card_debit',
@@ -33,9 +33,8 @@ class PurchaseRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'amount.required'             => 'amount is required.',
-            'amount.integer'              => 'amount must be an integer.',
-            'amount.min'                  => 'amount must be at least 1.',
+            'quantity.required'             => 'quantity is required.',
+            'quantity.integer'              => 'quantity must be an integer.',
             'client_id.required'            => 'client ID is required.',
             'client_id.integer'             => 'client ID must be an integer.',
             'client_id.exists'              => 'client ID does not exist.',

@@ -2,7 +2,9 @@
 
 namespace App\Interfaces;
 
+use App\Models\Product;
+
 interface ProductRepositoryInterface
 {
-    public function getProductAndPrice($productId): array;
+    public function getProductPrice($productId): Product;
 }
