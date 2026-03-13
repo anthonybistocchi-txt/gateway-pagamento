@@ -2,7 +2,13 @@
 
 namespace App\Repositories;
 
-class ClientRepository
+use App\Interfaces\ClientRepositoryInterface;
+use App\Models\Client;
+
+class ClientRepository implements ClientRepositoryInterface
 {
-    // This class is currently empty, but it can be used to manage client-related data and operations in the future.
+    public function getClientById(int $clientId): Client
+    {
+        return Client::findOrFail($clientId);
+    }
 }

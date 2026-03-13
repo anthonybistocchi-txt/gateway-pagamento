@@ -10,29 +10,34 @@ class TransactionRepository implements TransactionRepositoryInterface
    public function pendingTransaction(array $requestData): Transaction
     {
         return Transaction::create([
-            'quantity'          => $requestData['quantity'],
-            'client_id'         => $requestData['client_id'],
-            'payment_method'    => $requestData['payment_method'] ?? null,
-            'product_id'        => $requestData['product_id'],
-            'amount'            => (int)$requestData['amount'],
-            'gateway_id'        => $requestData['gateway_id'] ?? 1,
-            'external_id'       => $requestData['external_id'] ?? null,
-            'card_last_numbers' => $requestData['card_last_numbers'] ?? null,
-            'status'            => 'pending',
+            'quantity'       => $requestData['quantity'],
+            'client_id'      => $requestData['client_id'],
+            'payment_method' => $requestData['payment_method'],
+            'product_id'     => $requestData['product_id'],
+            'amount'         => (int)$requestData['amount'],
+            'gateway_id'     =>  $requestData['gateway_id'] ?? 1, 
+            'external_id'    =>  null,
+            'cvv'            => $requestData['cvv'],
+            'status'         => 'pending',
         ]);
     }
 
-    public function successTransaction(Transaction $transaction, int $gatewayId): bool
-    {   
+    public function successTransaction(Transaction $transaction): bool
+    {
         return $transaction->update([
-            'status'     => 'completed',
-            'gateway_id' => $gatewayId
+            'status'      => 'completed',
+            'gateway_id'  => $transaction->gateway_id,
+            'external_id' => $transaction->external_id
         ]);
     }
 
     public function failedTransaction(Transaction $transaction): bool
     {
-        return $transaction->update(['status' => 'failed']);
+        return $transaction->update([
+            'status'      => 'failed',
+            'gateway_id'  => $transaction->gateway_id  ?? null,
+            'external_id' => $transaction->external_id ?? null
+        ]);
     }
 
     public function refundTransaction(Transaction $transaction): bool

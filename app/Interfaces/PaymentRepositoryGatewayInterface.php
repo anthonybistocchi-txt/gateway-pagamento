@@ -6,7 +6,7 @@ use App\Models\Transaction;
 
 interface PaymentRepositoryGatewayInterface
 {
-    public function processPayment(Transaction $transaction);
+    public function processPayment(Transaction $transaction, array $paymentData): bool | array;
 
     public function refund(Transaction $transaction): bool;
 

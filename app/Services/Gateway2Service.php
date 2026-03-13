@@ -8,26 +8,28 @@ use Illuminate\Support\Facades\Http;
 
 class Gateway2Service implements PaymentRepositoryGatewayInterface
 {
-    public function processPayment(Transaction $transaction): bool
+    public function processPayment(Transaction $transaction, array $paymentData): bool | array
     {
+        $client = $transaction->client;
+
         $response = Http::withHeaders([
             'Gateway-Auth-Token'  => env('GATEWAY_AUTH_TOKEN'),
             'Gateway-Auth-Secret' => env('GATEWAY_AUTH_SECRET')
 
         ])->post('http://gateways-mock:3002/transacoes', [
             'valor'        => $transaction->amount,
-            'nome'         => 'Cliente BeTalent',
-            'email'        => 'cliente@betalent.tech',
-            'numeroCartao' => '556900000000' . $transaction->card_last_numbers,
-            'cvv'          => '010',
+            'nome'         => $client->name,
+            'email'        => $client->email,
+            'numeroCartao' => $paymentData['card_number'],
+            'cvv'          => $paymentData['cvv'],
         ]);
 
         if ($response->failed()) 
         {
             return false;
         }
-
-        return true;
+ 
+        return $response->json();
     }
 
     public function refund(Transaction $transaction): bool

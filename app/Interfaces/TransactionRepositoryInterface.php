@@ -7,7 +7,7 @@ interface TransactionRepositoryInterface
 {
     public function pendingTransaction(array $requestData): Transaction;
 
-   public function successTransaction(Transaction $transaction, int $gatewayId): bool;
+   public function successTransaction(Transaction $transaction): bool;
 
     public function failedTransaction(Transaction $transaction): bool;
 

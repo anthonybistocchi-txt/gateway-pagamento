@@ -12,8 +12,16 @@ class Transaction extends Model
         'amount',
         'status',
         'external_id',
-        'card_last_numbers',
+        'cvv',
+        'quantity',
+        'card_number',
         'product_id',
         'payment_method',
     ];
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
+    }
+    
 }

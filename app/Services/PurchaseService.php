@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Interfaces\ClientRepositoryInterface;
 use App\Interfaces\ProductRepositoryInterface;
 use App\Interfaces\TransactionRepositoryInterface;
 use App\Models\Transaction;
@@ -11,6 +12,7 @@ use App\Services\Gateway2Service;
 class PurchaseService
 {
     public function __construct(
+       protected ClientRepositoryInterface $clientRepository,
        protected TransactionRepositoryInterface $transactionRepository,
        protected ProductRepositoryInterface $productRepository,
        protected Gateway1Service $gateway1Service,
@@ -21,29 +23,35 @@ class PurchaseService
     {
         $productData = $this->productRepository->getProductPrice($requestData['product_id']);
         
-        (int)$requestData['amount'] = $productData->amount;
+        $requestData['amount'] = $productData->amount;
         
         $transaction = $this->transactionRepository->pendingTransaction($requestData);
 
-        return $this->checkPaymentMethod($transaction);
+        $paymentData = [
+            'card_number' => $requestData['card_number'],   // apenas cartao
+            'cvv'         => $requestData['cvv'],
+        ];
+
+        return $this->checkPaymentMethod($transaction, $paymentData);
     }
 
-    private function checkPaymentMethod($transaction)
+    private function checkPaymentMethod($transaction, $paymentData)
     {
         $paymentMethod = $transaction->payment_method;
        
         return match ($paymentMethod) 
         {
-            'card_credit', 'card_debit' => $this->processCardPayment($transaction),
+            'card_credit', 'card_debit' => $this->processCardPayment($transaction, $paymentData),
             'pix'                       => $this->processPixPayment($transaction),
             'boleto'                    => $this->processBoletoPayment($transaction),
             default                     => throw new \InvalidArgumentException('Invalid payment method.'),
         };
     }
 
-    private function processCardPayment(Transaction $transaction)
+    private function processCardPayment(Transaction $transaction, array $paymentData)
     {
         try {
+
             $gatewaysToTry = [
                 1 => $this->gateway1Service,
                 2 => $this->gateway2Service,
@@ -51,11 +59,15 @@ class PurchaseService
 
             foreach ($gatewaysToTry as $gatewayId => $gatewayService) 
             {
-                if ($gatewayService->processPayment($transaction)) 
-                {   
-                    $transaction['gateway_id'] = $gatewayId;
+                $paymentResponse = $gatewayService->processPayment($transaction, $paymentData);
 
-                    $this->transactionRepository->successTransaction($transaction, $gatewayId);
+                if ($paymentResponse) 
+                {                      
+                    $transaction->external_id = $paymentResponse['id']; 
+                    $transaction->gateway_id  = $gatewayId;
+                    
+                    $this->transactionRepository->successTransaction($transaction);
+
                     return true;
                 }
             }

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('amount');
             $table->string('quantity')->nullable();
             $table->enum('payment_method', ['card_credit', 'card_debit', 'pix', 'boleto']);
-            $table->char('card_last_numbers', 4);
+            $table->char('cvv', 4);
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });

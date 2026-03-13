@@ -9,25 +9,28 @@ use Illuminate\Support\Facades\Http;
 
 class Gateway1Service implements PaymentRepositoryGatewayInterface
 {
-    public function processPayment(Transaction $transaction): bool
+    public function processPayment(Transaction $transaction, array $paymentData): bool | array
     {
         $token = $this->authenticate();
+        
+        $client = $transaction->client;
 
         $response = Http::withToken($token)
             ->post('http://gateways-mock:3001/transactions', [
                 'amount'     => $transaction->amount,
-                'name'       => $transaction->client->name,
-                'email'      => $transaction->client->email,
-                'cardNumber' => $transaction->card_number,
-                'cvv'        => $transaction->cvv,
+                'name'       => $client->name,
+                'email'      => $client->email,
+                'cardNumber' => $paymentData['card_number'],
+                // 'cvv'        => $paymentData['cvv'],
             ]);
-
+        
         if ($response->failed()) 
         {
             return false;
         }
 
-        return true;
+        return $response->json();
+
     }
 
     public function refund(Transaction $transaction): bool
