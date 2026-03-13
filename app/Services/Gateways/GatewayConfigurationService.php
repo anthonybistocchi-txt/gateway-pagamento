@@ -22,9 +22,20 @@ class GatewayConfigurationService
         return $this->gatewayRepository->deactivate($id);
     }
 
-    public function updateGatewayPriority($id, $priority)
+    public function updateGatewayPriority(array $data)
     {
-        return $this->gatewayRepository->updatePriority($id, $priority);
+        return $this->gatewayRepository->updatePriority($data['id'], $data['priority']);
+    }
+
+    public function getActivesGatewaysOrderByPriority()
+    {
+        $activeGateways = $this->gatewayRepository->getActivesGatewaysOrderByPriority();
+
+        if ($activeGateways->isEmpty()) {
+            throw new \Exception('No active gateways available.');
+        }
+
+        return $activeGateways;
     }
 
 }

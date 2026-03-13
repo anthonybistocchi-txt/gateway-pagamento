@@ -14,9 +14,9 @@ Route::post('/purchases', [PurchaseController::class, 'store'])->name('purchases
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('gateways')->group(function () {
-        Route::patch('/{id}/activate', [GatewayController::class, 'activate'])->name('gateways.activate');
-        Route::patch('/{id}/deactivate', [GatewayController::class, 'deactivate'])->name('gateways.deactivate');
-        Route::patch('/{id}/priority', [GatewayController::class, 'updatePriority'])->name('gateways.updatePriority');
+        Route::patch('/activate', [GatewayController::class, 'activate'])->name('gateways.activate');
+        Route::patch('/deactivate', [GatewayController::class, 'deactivate'])->name('gateways.deactivate');
+        Route::patch('/priority', [GatewayController::class, 'updatePriority'])->name('gateways.updatePriority');
     });
 
     Route::prefix('users')->group(function () {

@@ -20,4 +20,9 @@ class GatewayRepositoryConfiguration implements GatewayConfigurationRepositoryIn
     {
         return Gateway::where('id', $gatewayId)->update(['priority' => $priority]);
     }
+
+    public function getActivesGatewaysOrderByPriority()
+    {
+        return Gateway::select(['id', 'priority'])->where('is_active', 1)->orderBy('priority')->get();
+    }
 }

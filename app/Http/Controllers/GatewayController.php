@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Gateway\GatewayActivateAndDeactivateRequest;
+use App\Http\Requests\Gateway\GatewayUpdatePriorityRequest;
 use App\Services\Gateways\GatewayConfigurationService;
-use Illuminate\Http\Request;
 
 class GatewayController extends Controller
 {
@@ -11,35 +12,33 @@ class GatewayController extends Controller
         protected GatewayConfigurationService $gatewayConfigurationService,
     ){}
 
-    public function activate($id)
+    public function activate(GatewayActivateAndDeactivateRequest $request)
     {
-        $this->gatewayConfigurationService->activateGateway($id);
+        $this->gatewayConfigurationService->activateGateway($request->validated('id'));
 
         return response()->json([
             'status'  => true,
-            'message' => "Gateway $id activated successfully."
+            'message' => "gateway activated successfully."
         ]);
     }
 
-    public function deactivate($id)
+    public function deactivate(GatewayActivateAndDeactivateRequest $request)
     {
-        $this->gatewayConfigurationService->deactivateGateway($id);
+        $this->gatewayConfigurationService->deactivateGateway($request->validated('id'));
 
         return response()->json([
             'status'  => true,
-            'message' => "Gateway $id deactivated successfully."
+            'message' => "gateway deactivated successfully."
         ]);
     }
 
-    public function updatePriority(Request $request, $id)
+    public function updatePriority(GatewayUpdatePriorityRequest $request)
     {
-        $priority = $request->input('priority');
-
-        $this->gatewayConfigurationService->updateGatewayPriority($id, $priority);
+        $this->gatewayConfigurationService->updateGatewayPriority($request->validated());
 
         return response()->json([
             'status'  => true,
-            'message' => "Gateway $id priority updated to priority $priority successfully."
+            'message' => "Gateway priority updated priority successfully."
         ]);
     }
 }

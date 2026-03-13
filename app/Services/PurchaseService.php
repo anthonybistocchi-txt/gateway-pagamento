@@ -7,8 +7,8 @@ use App\Interfaces\ProductRepositoryInterface;
 use App\Interfaces\TransactionRepositoryInterface;
 use App\Models\Transaction;
 use App\Services\Gateways\BearerTokenGatewayService;
+use App\Services\Gateways\GatewayConfigurationService;
 use App\Services\Gateways\HeaderAuthGatewayService;
-
 
 class PurchaseService
 {
@@ -17,7 +17,8 @@ class PurchaseService
        protected TransactionRepositoryInterface $transactionRepository,
        protected ProductRepositoryInterface     $productRepository,
        protected BearerTokenGatewayService      $bearerTokenGatewayService,
-       protected HeaderAuthGatewayService       $headerAuthGatewayService
+       protected HeaderAuthGatewayService       $headerAuthGatewayService,
+       protected GatewayConfigurationService    $gatewayConfigurationService
     ){}
     
     public function store($requestData)
@@ -52,20 +53,21 @@ class PurchaseService
     private function processCardPayment(Transaction $transaction, array $paymentData)
     {
         try {
+            $activeGateways = $this->gatewayConfigurationService->getActivesGatewaysOrderByPriority();
 
-            $gatewaysToTry = [
-                1 => $this->bearerTokenGatewayService,
-                2 => $this->headerAuthGatewayService,
-            ];
-
-            foreach ($gatewaysToTry as $gatewayId => $gatewayService) 
+            foreach ($activeGateways as $gateway) 
             {
+                $gatewayService = match ((int) $gateway->id) {
+                    1 => $this->bearerTokenGatewayService,
+                    2 => $this->headerAuthGatewayService,
+                    default => throw new \Exception("Gateways not found.", 400),
+                };
+
                 $paymentResponse = $gatewayService->processPayment($transaction, $paymentData);
 
-                if ($paymentResponse) 
-                {                      
-                    $transaction->external_id = $paymentResponse['id']; 
-                    $transaction->gateway_id  = $gatewayId;
+                if ($paymentResponse) {
+                    $transaction->external_id = $paymentResponse['id'];
+                    $transaction->gateway_id  = $gateway->id;
                     
                     $this->transactionRepository->successTransaction($transaction);
 
@@ -74,12 +76,12 @@ class PurchaseService
             }
 
             $this->transactionRepository->failedTransaction($transaction);
-            throw new \Exception('Payment rejected by gateways.', 400);
+            throw new \Exception('Payment rejected by all available gateways.', 400);
 
         } catch (\Exception $e) {
 
             $this->transactionRepository->failedTransaction($transaction);
-            throw new \Exception('Payment system unavailable.', 500);
+            throw new \Exception('Payment system unavailable: ' . $e->getMessage(), 500);
         }
     }
 
