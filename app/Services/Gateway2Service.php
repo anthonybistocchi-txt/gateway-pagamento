@@ -36,7 +36,7 @@ class Gateway2Service implements PaymentRepositoryGatewayInterface
     {
         $response = Http::withHeaders([
             'Gateway-Auth-Token'  => env('GATEWAY_AUTH_TOKEN'),
-            'Gateway-Auth-Secret' => env('GATEWAY_AUTH_SECRET')
+            'Gateway-Auth-Secret' => env('GATEWAY_AUTH_SECRET')                     // testar
 
         ])->post('http://gateways-mock:3002/transacoes/reembolso', [
             'id' => $transaction->external_id 

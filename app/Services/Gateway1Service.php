@@ -21,7 +21,7 @@ class Gateway1Service implements PaymentRepositoryGatewayInterface
                 'name'       => $client->name,
                 'email'      => $client->email,
                 'cardNumber' => $paymentData['card_number'],
-                // 'cvv'        => $paymentData['cvv'],
+                'cvv'        => $paymentData['cvv'],
             ]);
         
         if ($response->failed()) 

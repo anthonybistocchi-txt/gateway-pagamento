@@ -19,4 +19,14 @@ class PurchaseController extends Controller
                 'message' => 'Purchase created successfully.'
         ], 201);
     }
+
+    public function refund($id): JsonResponse
+    {
+        $this->purchaseService->processRefund($id);
+
+        return response()->json([
+                'status'  => true,
+                'message' => 'Refund processed successfully.'
+        ], 200);
+    }
 }

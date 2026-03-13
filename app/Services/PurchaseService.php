@@ -28,7 +28,7 @@ class PurchaseService
         $transaction = $this->transactionRepository->pendingTransaction($requestData);
 
         $paymentData = [
-            'card_number' => $requestData['card_number'],   // apenas cartao
+            'card_number' => $requestData['card_number'],   // just card
             'cvv'         => $requestData['cvv'],
         ];
 
@@ -42,8 +42,8 @@ class PurchaseService
         return match ($paymentMethod) 
         {
             'card_credit', 'card_debit' => $this->processCardPayment($transaction, $paymentData),
-            'pix'                       => $this->processPixPayment($transaction),
-            'boleto'                    => $this->processBoletoPayment($transaction),
+            // 'pix'                    => $this->processPixPayment($transaction),
+            // 'boleto'                 => $this->processBoletoPayment($transaction),
             default                     => throw new \InvalidArgumentException('Invalid payment method.'),
         };
     }
@@ -82,47 +82,48 @@ class PurchaseService
         }
     }
 
-    public function processRefund(Transaction $transaction)
+    public function processRefund($id)
     {
+        $transaction = $this->transactionRepository->find($id);
+
         if ($transaction->status !== 'completed') {
-            throw new \Exception("Just transactions completed can be refund", 422);
+            throw new \Exception("Just transactions completed can be refunded.", 422);
         }
 
-        $gatewayService = match ($transaction->gateway_id) 
-        {
+        $gatewayService = match ((int) $transaction->gateway_id) {
             1 => $this->gateway1Service,
             2 => $this->gateway2Service,
-            default => throw new \Exception("Gateway not found", 400),
+            default => throw new \Exception("Gateway not found for this transaction.", 400),
         };
 
         try {
-            $isRefunded = $gatewayService->refund($transaction);
+            
+            $refundResponse = $gatewayService->refund($transaction);
 
-            if ($isRefunded) 
+            if ($refundResponse) 
             {
                 $this->transactionRepository->refundTransaction($transaction);
                 return true;
             }
 
-            throw new \Exception('Gateway recused', 400);
+            throw new \Exception('Gateway refused the refund.', 400);
 
         } catch (\Exception $e) {
-            throw new \Exception('Error gateway: ' . $e->getMessage(), 500);
+            throw new \Exception('Gateway Error: ' . $e->getMessage(), 500);
         }
     }
 
 
-    private function processPixPayment($transaction)
-    {
-        $cardLastNumbers = $transaction->card_last_numbers;
+    // private function processPixPayment($transaction)
+    // {
 
-        return true;
-    }
+    //     return true;
+    // }
 
-    private function processBoletoPayment($transaction)
-    {
-        // Simulate boleto payment processing
-        return true;
-    }
+    // private function processBoletoPayment($transaction)
+    // {
+
+    //     return true;
+    // }
 
 }
