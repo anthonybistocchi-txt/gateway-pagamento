@@ -41,6 +41,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('purchases')->group(function () {
         Route::get('/', [PurchaseController::class, 'index'])->name('purchases.index');
         Route::get('/{id}', [PurchaseController::class, 'show'])->name('purchases.show'); // Detalhes da compra
-        Route::post('/{id}/refund', [PurchaseController::class, 'refund'])->name('purchases.refund'); // Reembolso 
+        Route::post('/refund', [PurchaseController::class, 'refund'])->name('purchases.refund'); // Reembolso 
     });
 });
