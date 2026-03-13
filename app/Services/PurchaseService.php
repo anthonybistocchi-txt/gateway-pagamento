@@ -23,7 +23,7 @@ class PurchaseService
     {
         $productData = $this->productRepository->getProductPrice($requestData['product_id']);
         
-        $requestData['amount'] = $productData->amount;
+        $requestData['amount'] = $productData->amount * $requestData['quantity'];
         
         $transaction = $this->transactionRepository->pendingTransaction($requestData);
 
