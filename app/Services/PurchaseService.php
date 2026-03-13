@@ -6,17 +6,18 @@ use App\Interfaces\ClientRepositoryInterface;
 use App\Interfaces\ProductRepositoryInterface;
 use App\Interfaces\TransactionRepositoryInterface;
 use App\Models\Transaction;
-use App\Services\Gateway1Service;
-use App\Services\Gateway2Service;
+use App\Services\Gateways\BearerTokenGatewayService;
+use App\Services\Gateways\HeaderAuthGatewayService;
+
 
 class PurchaseService
 {
     public function __construct(
-       protected ClientRepositoryInterface $clientRepository,
+       protected ClientRepositoryInterface      $clientRepository,
        protected TransactionRepositoryInterface $transactionRepository,
-       protected ProductRepositoryInterface $productRepository,
-       protected Gateway1Service $gateway1Service,
-       protected Gateway2Service $gateway2Service
+       protected ProductRepositoryInterface     $productRepository,
+       protected BearerTokenGatewayService      $bearerTokenGatewayService,
+       protected HeaderAuthGatewayService       $headerAuthGatewayService
     ){}
     
     public function store($requestData)
@@ -53,8 +54,8 @@ class PurchaseService
         try {
 
             $gatewaysToTry = [
-                1 => $this->gateway1Service,
-                2 => $this->gateway2Service,
+                1 => $this->bearerTokenGatewayService,
+                2 => $this->headerAuthGatewayService,
             ];
 
             foreach ($gatewaysToTry as $gatewayId => $gatewayService) 
@@ -91,8 +92,8 @@ class PurchaseService
         }
 
         $gatewayService = match ((int) $transaction->gateway_id) {
-            1 => $this->gateway1Service,
-            2 => $this->gateway2Service,
+            1 => $this->bearerTokenGatewayService,
+            2 => $this->headerAuthGatewayService,
             default => throw new \Exception("Gateway not found for this transaction.", 400),
         };
 

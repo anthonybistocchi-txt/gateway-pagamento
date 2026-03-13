@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Gateways;
 
 use App\Interfaces\PaymentRepositoryGatewayInterface;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Http;
 
 
-class Gateway1Service implements PaymentRepositoryGatewayInterface
+class BearerTokenGatewayService implements PaymentRepositoryGatewayInterface
 {
+    public function __construct(protected HeaderAuthGatewayService $headerAuthGatewayService){}
     public function processPayment(Transaction $transaction, array $paymentData): bool | array
     {
         $token = $this->authenticate();
@@ -41,6 +42,11 @@ class Gateway1Service implements PaymentRepositoryGatewayInterface
             ->post("http://gateways-mock:3001/transactions/{$transaction->external_id}/charge_back");
 
         return $response->successful();
+    }
+
+    public function updatePriority(int $gatewayId, int $priority): void
+    {
+        
     }
 
     private function authenticate(): string 

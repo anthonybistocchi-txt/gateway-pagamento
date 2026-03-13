@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Gateways;
 
 use App\Interfaces\PaymentRepositoryGatewayInterface;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Http;
 
-class Gateway2Service implements PaymentRepositoryGatewayInterface
+class HeaderAuthGatewayService implements PaymentRepositoryGatewayInterface
 {
+    public function __construct(protected BearerTokenGatewayService $bearerTokenGatewayService){}
     public function processPayment(Transaction $transaction, array $paymentData): bool | array
     {
         $client = $transaction->client;
@@ -23,7 +24,7 @@ class Gateway2Service implements PaymentRepositoryGatewayInterface
             'numeroCartao' => $paymentData['card_number'],
             'cvv'          => $paymentData['cvv'],
         ]);
-
+        
         if ($response->failed()) 
         {
             return false;
