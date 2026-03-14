@@ -10,4 +10,15 @@ class Product extends Model
         'name',
         'amount',
     ];
+
+    public function purchases()
+    {
+        return $this->hasMany(Purchase::class);
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+    
 }

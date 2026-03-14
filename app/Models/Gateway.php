@@ -11,4 +11,10 @@ class Gateway extends Model
         'is_active',
         'priority',
     ];
+
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }

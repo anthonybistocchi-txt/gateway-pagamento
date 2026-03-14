@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\User\UserByIdRequest;
+use App\Http\Requests\User\UserIdRequest;
 use App\Http\Requests\User\UserCreateRequest;
+use App\Http\Requests\User\UserStoreRequest;
+use App\Http\Requests\User\UserUpdateRequest;
 use App\Services\UserService;
+use Illuminate\Http\JsonResponse;
 
 class UserController extends Controller
 {
     public function __construct(protected UserService $userService){}
 
-    public function get()
+    public function index(): JsonResponse
     {
         $data = $this->userService->getUsers();
 
@@ -21,7 +24,7 @@ class UserController extends Controller
         ]);
     }
     
-    public function getById(UserByIdRequest $request)
+    public function show(UserIdRequest $request): JsonResponse
     {
         $data = $this->userService->getUsersById($request->validated());
 
@@ -32,7 +35,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function store(UserCreateRequest $request)
+    public function store(UserStoreRequest $request): JsonResponse
     {
         $this->userService->storeUser($request->validated());
 
@@ -42,9 +45,9 @@ class UserController extends Controller
         ]);
     }
 
-    public function update(UserByIdRequest $request)
+    public function update(UserUpdateRequest $request): JsonResponse
     {
-        $this->userService->updateUser($request->id, $request->validated());
+        $this->userService->updateUser($request->validated());
 
         return response()->json([
             'status'  => true,
@@ -52,9 +55,9 @@ class UserController extends Controller
         ]);
     }
 
-    public function delete($id)
+    public function destroy(UserIdRequest $request): JsonResponse
     {
-        $this->userService->deleteUser($id);
+        $this->userService->deleteUser($request->id);
 
         return response()->json([
             'status'  => true,

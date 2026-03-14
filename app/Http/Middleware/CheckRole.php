@@ -8,23 +8,24 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CheckRole
 {
-
+    
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        $user = $request->user(); 
+        $user         = $request->user(); 
+        $userRoleName = $user->role;
 
         if (!$user) {
-            return response()->json(['error' => 'Usuário não autenticado.'], 401);
+            return response()->json(['error' => 'user not authenticated'], 401);
         }
 
-        if ($user->role === 'admin') { 
+        if ($userRoleName === 'ADMIN') { 
             return $next($request);
         }
 
         
-        if (!in_array($user->role, $roles)) {
+        if (!in_array($userRoleName, $roles)) {
             return response()->json([
-                'error' => 'Acesso negado. Seu nível de usuário não permite esta ação.'
+                'error' => 'acess denied'
             ], 403); 
         }
 

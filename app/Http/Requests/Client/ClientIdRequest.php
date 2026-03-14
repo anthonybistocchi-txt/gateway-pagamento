@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserByIdRequest extends FormRequest
+class ClientIdRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -12,6 +12,14 @@ class UserByIdRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function prepareForValidation()
+    {
+        // Pega o parâmetro {id} da URL e mescla nos dados que serão validados
+        $this->merge([
+            'id' => $this->route('id'), 
+        ]);
     }
 
     /**
@@ -22,7 +30,7 @@ class UserByIdRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'required|integer|exists:users,id',
+            'id' => 'required|integer|exists:clients,id',
         ];
     }
 
@@ -31,7 +39,7 @@ class UserByIdRequest extends FormRequest
         return [
             'id.required' => 'the field ID is required.',
             'id.integer'  => 'the field ID must be an integer.',
-            'id.exists'   => 'the user with the provided ID does not exist.',
+            'id.exists'   => 'the client with the provided ID does not exist.',
         ];
     }
 }

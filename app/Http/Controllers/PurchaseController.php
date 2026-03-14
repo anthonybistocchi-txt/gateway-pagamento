@@ -2,32 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Purchase\PurchaseRefundRequest;
-use App\Http\Requests\Purchase\PurchaseStoreRequest;
 use App\Services\PurchaseService;
 use Illuminate\Http\JsonResponse;
+use Nette\Utils\Json;
 
 class PurchaseController extends Controller
 {
     public function __construct(protected PurchaseService $purchaseService){}
-    
-    public function store(PurchaseStoreRequest $request): JsonResponse
+    public function index():JsonResponse
     {
-        $this->purchaseService->store($request->validated());
+        $data = $this->purchaseService->getAll();
 
         return response()->json([
-                'status'  => true,
-                'message' => 'Purchase created successfully.'
-        ], 201);
+            'status'  => true,
+            'message' => 'Purchases retrieved successfully',
+            'data'    => $data
+        ]);
     }
+   
 
-    public function refund(PurchaseRefundRequest $request): JsonResponse
+    public function details()
     {
-        $this->purchaseService->processRefund($request->validated()['id']);
+        $data = $this->purchaseService->details(request()->all());
 
         return response()->json([
-                'status'  => true,
-                'message' => 'Refund processed successfully.'
-        ], 200);
+            'status'  => true,
+            'message' => 'Purchase details retrieved successfully',
+            'data'    => $data
+        ]);
     }
 }

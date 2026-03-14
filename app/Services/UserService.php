@@ -24,9 +24,9 @@ class UserService
         return $this->userRepository->storeUser($data);
     }
 
-    public function updateUser($id, $data): bool
+    public function updateUser(array $data): bool
     {
-        return $this->userRepository->updateUser($id, $data);
+        return $this->userRepository->updateUser($data);
     }
 
     // Lógica para deletar um usuário

@@ -10,4 +10,15 @@ class Client extends Model
         'name',
         'email',
     ];
+
+    public function purchases()
+    {
+        return $this->hasMany(Purchase::class);
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+    
 }

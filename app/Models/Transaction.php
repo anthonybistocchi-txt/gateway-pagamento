@@ -23,5 +23,20 @@ class Transaction extends Model
     {
         return $this->belongsTo(Client::class);
     }
+
+    public function gateway()
+    {
+        return $this->belongsTo(Gateway::class);
+    }
+
+    public function purchase()
+    {
+        return $this->hasOne(Purchase::class);
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
     
 }

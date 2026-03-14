@@ -24,9 +24,9 @@ class UserRepository implements UserRepositoryInterface
        return User::create($data) ? true : false;
     }
 
-    public function updateUser(int $id, array $data): bool
+    public function updateUser(array $data): bool
     {
-        $user = User::find($id);
+        $user = User::find($data['id']);
 
         if (!$user) {
             return false;

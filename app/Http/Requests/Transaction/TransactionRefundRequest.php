@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Purchase;
+namespace App\Http\Requests\Transaction;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PurchaseRefundRequest extends FormRequest
+class TransactionRefundRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
