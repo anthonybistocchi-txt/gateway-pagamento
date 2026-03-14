@@ -1,59 +1,105 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# AgilizaERP - PDV e Gateway de Pagamento
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 1) Visao Geral e Funcionalidades
+Este projeto implementa uma funcionalidade de Pagamento multi-gateway. Ao criar uma compra, o sistema calcula o valor com base no produto e na quantidade e tenta processar o pagamento em gateways ativos seguindo a prioridade configurada. Se um gateway falhar, o proximo e tentado.
 
-## About Laravel
+### Principais rotas (API)
+**Publicas**
+- `POST /login` autentica e retorna token
+- `POST /purchases` cria uma compra (transacao)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**Privadas (auth:sanctum)**
+- Gateways (ADMIN)
+	- `PATCH /gateways/{id}/activate`
+	- `PATCH /gateways/{id}/deactivate`
+	- `PATCH /gateways/{id}/priority`
+- Usuarios (MANAGER, ADMIN)
+	- `GET /users`
+	- `POST /users`
+	- `PATCH /users/{id}`
+	- `DELETE /users/{id}`
+- Produtos (MANAGER, FINANCE, ADMIN)
+	- `GET /products`
+	- `POST /products`
+	- `PATCH /products/{id}`
+	- `DELETE /products/{id}`
+- Clientes (MANAGER, FINANCE, ADMIN)
+	- `GET /clients`
+	- `GET /clients/{id}`
+- Compras (FINANCE, ADMIN)
+	- `GET /purchases`
+	- `GET /purchases/{id}`
+	- `POST /purchases/{id}/refund`
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Regra de negocio do Middleware de Permissoes
+O middleware `CheckRole` valida o papel do usuario autenticado e permite ou bloqueia o acesso:
+- ADMIN: acesso total a rotas privadas
+- MANAGER: gerencia usuarios e produtos; acessa clientes
+- FINANCE: gerencia produtos; acessa clientes, compras e reembolsos
+- USER: apenas rotas publicas
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 2) Pre-requisitos
+- PHP 8.2 (composer.json)
+- Node.js (necessario para Vite/Tailwind; use versao compativel com Vite 7)
+- Docker e Docker Compose (docker-compose.yml)
+- MySQL 8.0 (imagem do docker-compose)
 
-## Learning Laravel
+## 3) Guia de Instalacao Passo a Passo
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Clonar o repositorio
+```bash
+git clone <URL_DO_REPOSITORIO>
+cd payment-gateway
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Instalar dependencias
+```bash
+composer install
+npm install
+```
 
-## Laravel Sponsors
+### Configurar .env
+Crie o arquivo `.env` a partir do `.env.example` e ajuste as variaveis criticas.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+**Banco de dados (MySQL)**
+- `DB_CONNECTION=mysql`
+- `DB_HOST=` (Docker) ou `127.0.0.1` (local)
+- `DB_PORT=3306`
+- `DB_DATABASE=`
+- `DB_USERNAME=`
+- `DB_PASSWORD=`
 
-### Premium Partners
+**Gateway de Pagamento**
+- `GATEWAY_AUTH_TOKEN`
+- `GATEWAY_AUTH_SECRET`
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+**Aplicacao**
+- `APP_KEY` (gerado via artisan)
+- `APP_URL=http://localhost:8000`
 
-## Contributing
+### Subir com Docker (recomendado)
+```bash
+docker compose up -d --build
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Migrar e popular o banco
+```bash
+php artisan key:generate
+php artisan migrate --seed
+```
 
-## Code of Conduct
+Se quiser rodar apenas os seeds:
+```bash
+php artisan db:seed
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Rodar localmente (sem Docker)
+```bash
+php artisan serve
+npm run dev
+```
 
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 4) Stack Tecnologica
+- Laravel 12, PHP 8.2, Sanctum
+- MySQL 8.0
+- Docker e Docker Compose
