@@ -28,7 +28,7 @@ class TransactionStoreRequest extends FormRequest
             'quantity'       => 'required|integer',
             'client_id'      => 'required|integer|exists:clients,id',
             'product_id'     => 'required|integer|exists:products,id',
-            'payment_method' => 'required|string|in:card_credit,pix,boleto,card_debit',
+            'payment_method' => 'required|string|in:card_credit,card_debit',
             'cvv'            => 'required_if:payment_method,card_credit,card_debit|string|size:3',
         ];
     }
@@ -53,7 +53,7 @@ class TransactionStoreRequest extends FormRequest
             'product_id.exists'       => 'product ID does not exist.',
             'payment_method.required' => 'payment method is required.',
             'payment_method.string'   => 'payment method must be a string.',
-            'payment_method.in'       => 'payment method must be one of: card_credit, pix, boleto, card_debit.',
+            'payment_method.in'       => 'payment method must be one of: card_credit, card_debit.',
             'cvv.required_if'         => 'CVV is required when payment method is card_credit or card_debit.',
             'cvv.string'              => 'CVV must be a string.',
             'cvv.size'                => 'CVV must be exactly 4 characters.',

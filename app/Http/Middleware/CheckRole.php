@@ -7,15 +7,19 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckRole
-{
-    
+{   
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        $user         = $request->user(); 
-        $userRoleName = $user->role;
+        $user = $request->user();
 
         if (!$user) {
             return response()->json(['error' => 'user not authenticated'], 401);
+        }
+
+        $userRoleName = $user->roles?->name;
+
+        if (!$userRoleName) {
+            return response()->json(['error' => 'acess denied'], 403);
         }
 
         if ($userRoleName === 'ADMIN') { 

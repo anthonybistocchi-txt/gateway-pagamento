@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Http;
 
 class BearerTokenGatewayService implements PaymentRepositoryGatewayInterface
 {
-    public function __construct(protected HeaderAuthGatewayService $headerAuthGatewayService){}
     public function processPayment(Transaction $transaction, array $paymentData): bool | array
     {
         $token = $this->authenticate();

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Services;
+namespace App\Repositories;
 
+use App\Interfaces\PurchaseRepositoryInterface;
 use App\Models\Purchase;
 use App\Models\Transaction;
-use App\Repositories\PurchaseRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 
 class PurchaseRepository implements PurchaseRepositoryInterface
@@ -26,10 +26,9 @@ class PurchaseRepository implements PurchaseRepositoryInterface
         return Purchase::insert([
             'client_id'      => $data['client_id'],
             'product_id'     => $data['product_id'],
-            'quantity'       => $data['quantity'],
             'amount'         => $data['amount'],
             'status'         => 'completed',
-            'transaction_id' => $data['transaction_id'],
+            'transaction_id' => $data->id,
         ]);  
     }
 

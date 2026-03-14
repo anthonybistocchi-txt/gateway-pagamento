@@ -16,8 +16,7 @@ class ClientService
 
     public function getClientDetails($id)
     {
-        
-        return $this->clientRepository->getClientDetails($id);
+        return $this->clientRepository->getClientDetails(['id' => $id]);
     }
 
 }

@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Interfaces;
 
-use App\Models\Gateway;
 
 interface GatewayConfigurationRepositoryInterface
 {

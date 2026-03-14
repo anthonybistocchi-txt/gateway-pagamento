@@ -21,14 +21,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/{id}/priority', [GatewayController::class, 'updatePriority'])->name('gateways.updatePriority');
     });
 
-    Route::prefix('users')->middleware(CheckRole::class.':manager')->group(function () {
+    Route::prefix('users')->middleware(CheckRole::class.':MANAGER')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('users.index');
         Route::post('/', [UserController::class, 'store'])->name('users.store');
         Route::patch('/{id}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/{id}', [UserController::class, 'destroy'])->name('users.destroy');
     });
 
-    Route::prefix('products')->middleware(CheckRole::class.':manager,finance')->group(function () {
+    Route::prefix('products')->middleware(CheckRole::class.':MANAGER,FINANCE')->group(function () {
         Route::get('/', [ProductController::class, 'index'])->name('products.index');
         Route::post('/', [ProductController::class, 'store'])->name('products.store');
         Route::patch('/{id}', [ProductController::class, 'update'])->name('products.update');
@@ -43,6 +43,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('purchases')->group(function () {
         Route::get('/', [PurchaseController::class, 'index'])->name('purchases.index');
         Route::get('/{id}', [PurchaseController::class, 'show'])->name('purchases.details'); 
-        Route::post('/{id}/refund', [TransactionController::class, 'refund'])->name('purchases.refund')->middleware(CheckRole::class.':finance'); 
+        Route::post('/{id}/refund', [TransactionController::class, 'refund'])->name('purchases.refund')->middleware(CheckRole::class.':FINANCE'); 
     });
 });

@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Interfaces\GatewayConfigurationRepositoryInterface;
 use App\Models\Gateway;
 
 class GatewayRepositoryConfiguration implements GatewayConfigurationRepositoryInterface

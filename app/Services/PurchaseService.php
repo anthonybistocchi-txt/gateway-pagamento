@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Repositories\PurchaseRepositoryInterface;
+use App\Interfaces\PurchaseRepositoryInterface;
 
 class PurchaseService
 {

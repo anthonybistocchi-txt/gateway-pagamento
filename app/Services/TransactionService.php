@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Interfaces\ProductRepositoryInterface;
+use App\Interfaces\PurchaseRepositoryInterface;
 use App\Interfaces\TransactionRepositoryInterface;
 use App\Models\Transaction;
 use App\Services\Gateways\BearerTokenGatewayService;
@@ -14,7 +15,7 @@ class TransactionService
     public function __construct(
        protected TransactionRepositoryInterface $transactionRepository,
        protected ProductRepositoryInterface     $productRepository,
-       protected PurchaseRepository             $purchaseRepository,
+         protected PurchaseRepositoryInterface    $purchaseRepository,
        protected BearerTokenGatewayService      $bearerTokenGatewayService,
        protected HeaderAuthGatewayService       $headerAuthGatewayService,
        protected GatewayConfigurationService    $gatewayConfigurationService
@@ -43,8 +44,6 @@ class TransactionService
         return match ($paymentMethod) 
         {
             'card_credit', 'card_debit' => $this->processCardPayment($transaction, $paymentData),
-            // 'pix'                    => $this->processPixPayment($transaction),
-            // 'boleto'                 => $this->processBoletoPayment($transaction),
             default                     => throw new \InvalidArgumentException('Invalid payment method.'),
         };
     }
@@ -119,18 +118,4 @@ class TransactionService
             throw new \Exception('Gateway Error', 500);
         }
     }
-
-
-    // private function processPixPayment($transaction)
-    // {
-
-    //     return true;
-    // }
-
-    // private function processBoletoPayment($transaction)
-    // {
-
-    //     return true;
-    // }
-
 }

@@ -2,7 +2,7 @@
 
 namespace App\Services\Gateways;
 
-use App\Repositories\GatewayConfigurationRepositoryInterface;
+use App\Interfaces\GatewayConfigurationRepositoryInterface;
 
 class GatewayConfigurationService
 {
