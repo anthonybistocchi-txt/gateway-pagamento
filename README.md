@@ -1,4 +1,4 @@
-# AgilizaERP - PDV e Gateway de Pagamento
+# Pagamento Multi-Gateway 
 
 ## 1) Visao Geral e Funcionalidades
 Este projeto implementa uma funcionalidade de Pagamento multi-gateway. Ao criar uma compra, o sistema calcula o valor com base no produto e na quantidade e tenta processar o pagamento em gateways ativos seguindo a prioridade configurada. Se um gateway falhar, o proximo e tentado.
