@@ -14,7 +14,7 @@ class TransactionRepository implements TransactionRepositoryInterface
             'client_id'      => $requestData['client_id'],
             'payment_method' => $requestData['payment_method'],
             'product_id'     => $requestData['product_id'],
-            'amount'         => (int)$requestData['amount'],
+            'amount'         => $requestData['amount'],
             'gateway_id'     =>  $requestData['gateway_id'] ?? 1, 
             'external_id'    =>  null,
             'cvv'            => $requestData['cvv'],

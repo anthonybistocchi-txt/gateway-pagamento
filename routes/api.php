@@ -35,14 +35,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
     });
 
-    Route::prefix('clients')->group(function () {
+    Route::prefix('clients')->middleware(CheckRole::class.':MANAGER,FINANCE')->group(function () {
         Route::get('/', [ClientController::class, 'index'])->name('clients.index');
         Route::get('/{id}', [ClientController::class, 'details'])->name('clients.details'); 
     });
 
-    Route::prefix('purchases')->group(function () {
+    Route::prefix('purchases')->middleware(CheckRole::class.':FINANCE')->group(function () {
         Route::get('/', [PurchaseController::class, 'index'])->name('purchases.index');
-        Route::get('/{id}', [PurchaseController::class, 'show'])->name('purchases.details'); 
-        Route::post('/{id}/refund', [TransactionController::class, 'refund'])->name('purchases.refund')->middleware(CheckRole::class.':FINANCE'); 
+        Route::get('/{id}', [PurchaseController::class, 'details'])->name('purchases.details'); 
+        Route::post('/{id}/refund', [TransactionController::class, 'refund'])->name('purchases.refund'); 
     });
 });

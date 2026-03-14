@@ -55,7 +55,7 @@ class ProductController extends Controller
 
     public function destroy(ProductIdRequest $request): JsonResponse
     {
-        $this->productService->deleteProduct($request->validated());
+        $this->productService->deleteProduct($request->validated()['id']);
 
         return response()->json([
             'status'  => true,

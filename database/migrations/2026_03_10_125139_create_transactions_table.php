@@ -19,7 +19,7 @@ return new class extends Migration
             $table->enum('status', ['pending', 'completed', 'failed','refunded'])->default('pending');
             $table->decimal('amount', 10, 2);
             $table->string('quantity')->nullable();
-            $table->enum('payment_method', ['card_credit', 'card_debit', 'pix', 'boleto']);
+            $table->enum('payment_method', ['card_credit', 'card_debit']);
             $table->char('cvv', 4);
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->timestamps();

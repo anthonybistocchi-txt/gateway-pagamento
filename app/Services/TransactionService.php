@@ -50,11 +50,12 @@ class TransactionService
 
     private function processCardPayment(Transaction $transaction, array $paymentData)
     {
-        try {
-            $activeGateways = $this->gatewayConfigurationService->getActivesGatewaysOrderByPriority();
+        $activeGateways = $this->gatewayConfigurationService->getActivesGatewaysOrderByPriority();
+        $lastError = null;
 
-            foreach ($activeGateways as $gateway) 
-            {
+        foreach ($activeGateways as $gateway)
+        {
+            try {
                 $gatewayService = match ((int) $gateway->id) {
                     1 => $this->bearerTokenGatewayService,
                     2 => $this->headerAuthGatewayService,
@@ -66,23 +67,24 @@ class TransactionService
                 if ($paymentResponse) {
                     $transaction->external_id = $paymentResponse['id'];
                     $transaction->gateway_id  = $gateway->id;
-                    
-                    $this->transactionRepository->successTransaction($transaction);
 
+                    $this->transactionRepository->successTransaction($transaction);
                     $this->purchaseRepository->store($transaction);
 
                     return true;
                 }
+            } catch (\Exception $e) {
+                $lastError = $e;
             }
+        }
 
-            $this->transactionRepository->failedTransaction($transaction);
-            throw new \Exception('Payment rejected by all available gateways.', 400);
+        $this->transactionRepository->failedTransaction($transaction);
 
-        } catch (\Exception $e) {
-
-            $this->transactionRepository->failedTransaction($transaction);
+        if ($lastError) {
             throw new \Exception('Payment system unavailable', 500);
         }
+
+        throw new \Exception('Payment rejected by all available gateways.', 400);
     }
 
     public function processRefund($id)
