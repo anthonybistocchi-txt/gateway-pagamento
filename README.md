@@ -6,7 +6,7 @@ Este projeto implementa uma funcionalidade de Pagamento multi-gateway. Ao criar 
 ### Principais rotas (API)
 **Publicas**
 - `POST /login` autentica e retorna token
-- `POST /purchases` cria uma compra (transacao)
+- `POST /purchases` cria uma compra
 
 **Privadas (auth:sanctum)**
 - Gateways (ADMIN)
