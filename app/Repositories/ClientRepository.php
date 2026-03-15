@@ -21,8 +21,7 @@ class ClientRepository implements ClientRepositoryInterface
     public function getClientDetails(array $data): Client
     {
         return Client::with([
-            'purchases:id,client_id,product_id,amount,status,transaction_id',
-            'transactions:id,client_id,gateway_id,amount,status'
+            'purchases'
         ])->findOrFail($data['id']);
     }
 

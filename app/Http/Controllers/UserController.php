@@ -26,7 +26,7 @@ class UserController extends Controller
     
     public function show(UserIdRequest $request): JsonResponse
     {
-        $data = $this->userService->getUsersById($request->validated());
+        $data = $this->userService->getUsersById($request->validated()); // no route for this method, but can be used in the future if needed
 
         return response()->json([
             'status'  => true,

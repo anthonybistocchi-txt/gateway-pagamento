@@ -15,7 +15,7 @@ class TransactionService
     public function __construct(
        protected TransactionRepositoryInterface $transactionRepository,
        protected ProductRepositoryInterface     $productRepository,
-         protected PurchaseRepositoryInterface    $purchaseRepository,
+       protected PurchaseRepositoryInterface    $purchaseRepository,
        protected BearerTokenGatewayService      $bearerTokenGatewayService,
        protected HeaderAuthGatewayService       $headerAuthGatewayService,
        protected GatewayConfigurationService    $gatewayConfigurationService
@@ -87,7 +87,7 @@ class TransactionService
         throw new \Exception('Payment rejected by all available gateways.', 400);
     }
 
-    public function processRefund($id)
+    public function processRefund(int $id)
     {
         $transaction = $this->transactionRepository->find($id);
 

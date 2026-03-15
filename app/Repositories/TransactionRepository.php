@@ -42,12 +42,7 @@ class TransactionRepository implements TransactionRepositoryInterface
 
     public function refundTransaction(Transaction $transaction): bool
     {
-        return $transaction->where([
-            'id'     => $transaction->id,
-            'status' => 'completed'
-        ])->update([
-            'status' => 'refunded'
-        ]);
+        return $transaction->update(['status' => 'refunded']);
     }
 
     public function find($id): Transaction

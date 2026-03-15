@@ -14,6 +14,14 @@ class GatewayUpdatePriorityRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        // Pega o parâmetro {id} da URL e mescla nos dados que serão validados
+        $this->merge([
+            'id' => $this->route('id'), 
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *

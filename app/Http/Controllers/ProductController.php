@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProductIdRequest;
-use App\Http\Requests\ProductStoreRequest;
-use App\Http\Requests\ProductUpdateRequest;
+use App\Http\Requests\Product\ProductIdRequest;
+use App\Http\Requests\Product\ProductStoreRequest;
+use App\Http\Requests\Product\ProductUpdateRequest;
 use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
 
@@ -28,7 +28,7 @@ class ProductController extends Controller
 
         return response()->json([
             'status'  => true,
-            'message' => 'Product retrieved successfully',
+            'message' => 'Product retrieved successfully',  // no route for this method, but can be used in the future if needed
             'data'    => $data
         ]);
     }
@@ -43,7 +43,7 @@ class ProductController extends Controller
         ]);
     }
 
-    public function update(ProductUpdateRequest $request, $id): JsonResponse
+    public function update(ProductUpdateRequest $request): JsonResponse
     {
         $this->productService->updateProduct($request->validated());
 

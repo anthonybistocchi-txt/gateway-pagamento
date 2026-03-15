@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -24,7 +24,6 @@ class ProductStoreRequest extends FormRequest
         return [
             'name'   => 'required|string|max:255',
             'amount' => 'required|integer|min:0',
-            'price'  => 'required|numeric|min:0',
         ];
     }
 
@@ -37,9 +36,6 @@ class ProductStoreRequest extends FormRequest
             'amount.required' => 'the field amount is required.',
             'amount.integer'  => 'the field amount must be an integer.',
             'amount.min'      => 'the field amount must be at least 0.',
-            'price.required'  => 'the field price is required.',
-            'price.numeric'   => 'the field price must be a number.',
-            'price.min'       => 'the field price must be at least 0.',
         ];
     }
 }

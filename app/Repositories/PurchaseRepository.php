@@ -14,7 +14,7 @@ class PurchaseRepository implements PurchaseRepositoryInterface
         return Purchase::all();
     }
 
-    public function details(array $data)
+    public function details(array $data): ?Purchase
     {
         return Purchase::with(['client', 'product', 'transaction'])
             ->where('id', $data['id'])
@@ -24,17 +24,18 @@ class PurchaseRepository implements PurchaseRepositoryInterface
     public function store(Transaction $data): bool
     {
         return Purchase::insert([
-            'client_id'      => $data['client_id'],
-            'product_id'     => $data['product_id'],
-            'amount'         => $data['amount'],
+            'client_id'      => $data->client_id,
+            'product_id'     => $data->product_id,
+            'amount'         => $data->amount,
             'status'         => 'completed',
             'transaction_id' => $data->id,
+            'quantity'       => $data->quantity,
         ]);  
     }
 
-    public function updateRefund(array $data): bool
+    public function updateRefund(int $id): bool
     {
-        return Purchase::where('transaction_id', $data['id'])
+        return Purchase::where('transaction_id', $id)
         ->where('status', 'completed')
         ->update([
             'status' => 'refunded',

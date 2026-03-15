@@ -9,5 +9,5 @@ interface TransactionRepositoryInterface
     public function successTransaction(Transaction $transaction): bool;
     public function failedTransaction(Transaction $transaction): bool;
     public function refundTransaction(Transaction $transaction): bool;
-    public function find($id): Transaction;
+    public function find(int $id): Transaction;
 }

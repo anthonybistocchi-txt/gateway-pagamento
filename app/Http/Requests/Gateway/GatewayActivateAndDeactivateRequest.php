@@ -23,8 +23,15 @@ class GatewayActivateAndDeactivateRequest extends FormRequest
     {
         return [
             'id'        => 'required|integer|exists:gateways,id',
-            'is_active' => 'required|boolean'
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        // Pega o parâmetro {id} da URL e mescla nos dados que serão validados
+        $this->merge([
+            'id' => $this->route('id'), 
+        ]);
     }
 
     public function messages(): array

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PurchaseDetailsRequest;
 use App\Services\PurchaseService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Nette\Utils\Json;
 
 class PurchaseController extends Controller
@@ -21,9 +23,9 @@ class PurchaseController extends Controller
     }
    
 
-    public function details()
+    public function details(PurchaseDetailsRequest $request):JsonResponse
     {
-        $data = $this->purchaseService->details(request()->all());
+        $data = $this->purchaseService->details($request->validated());
 
         return response()->json([
             'status'  => true,

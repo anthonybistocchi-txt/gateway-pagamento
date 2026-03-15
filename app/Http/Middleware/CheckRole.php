@@ -19,7 +19,7 @@ class CheckRole
         $userRoleName = $user->roles?->name;
 
         if (!$userRoleName) {
-            return response()->json(['error' => 'acess denied'], 403);
+            return response()->json(['error' => 'access denied'], 403);
         }
 
         if ($userRoleName === 'ADMIN') { 
@@ -29,7 +29,7 @@ class CheckRole
         
         if (!in_array($userRoleName, $roles)) {
             return response()->json([
-                'error' => 'acess denied'
+                'error' => 'access denied'
             ], 403); 
         }
 

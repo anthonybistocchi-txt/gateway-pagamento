@@ -24,7 +24,7 @@ class UserStoreRequest extends FormRequest
         return [
             'name'     => 'required|string|max:255',
             'email'    => 'required|string|email|max:255|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:8',
             'role_id'  => 'required|integer|in:1,2,3,4',
         ];
     }
@@ -43,7 +43,6 @@ class UserStoreRequest extends FormRequest
             'password.required' => 'the field password is required.',
             'password.string'   => 'the field password must be a string.',
             'password.min'      => 'the field password must be at least 8 characters.',
-            'password.confirmed'=> 'the password confirmation does not match.',
             'role_id.required'  => 'the field role is required.',
             'role_id.integer'   => 'the field role must be an integer.',
             'role_id.in'        => 'the selected role is invalid. Valid values are 1 (Admin), 2 (Manager), 3 (Finance), and 4 (User).',

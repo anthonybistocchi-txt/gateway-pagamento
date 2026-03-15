@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ClientIdRequest;
+use App\Http\Requests\Client\ClientIdRequest;
 use App\Services\ClientService;
 use Illuminate\Http\JsonResponse;
 

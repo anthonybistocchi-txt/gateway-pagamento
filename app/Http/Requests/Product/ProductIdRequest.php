@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -14,7 +14,7 @@ class ProductIdRequest extends FormRequest
         return true;
     }
 
-     protected function prepareForValidation()
+    protected function prepareForValidation()
     {
         // Pega o parâmetro {id} da URL e mescla nos dados que serão validados
         $this->merge([

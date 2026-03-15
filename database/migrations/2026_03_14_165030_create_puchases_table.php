@@ -18,6 +18,7 @@ return new class extends Migration
             $table->enum('status', ['completed', 'refunded'])->default('completed');
             $table->foreignId('client_id')->constrained()->onDelete('cascade');
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->integer('quantity')->default(1);
             $table->timestamps();
         });
     }

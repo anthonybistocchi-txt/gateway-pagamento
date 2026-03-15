@@ -3,6 +3,7 @@
 namespace App\Services\Gateways;
 
 use App\Interfaces\GatewayConfigurationRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 
 class GatewayConfigurationService
 {
@@ -24,7 +25,24 @@ class GatewayConfigurationService
 
     public function updateGatewayPriority(array $data)
     {
-        return $this->gatewayRepository->updatePriority($data['id'], $data['priority']);
+        return DB::transaction(function () use ($data) {
+
+            $gatewayToUpdate = $this->gatewayRepository->getGatewayById($data['id']);
+
+            $oldPriority = $gatewayToUpdate->priority;
+
+            if ($oldPriority === $data['priority']) {
+                return true; // No change needed
+            }
+
+            $gatewayPriorityExisting = $this->gatewayRepository->getGatewayByPriority($data['priority']);
+
+            if ($gatewayPriorityExisting) {
+                $this->gatewayRepository->updatePriority($gatewayPriorityExisting->id, $oldPriority);
+            }
+
+            return $this->gatewayRepository->updatePriority($data['id'], $data['priority']);
+        });
     }
 
     public function getActivesGatewaysOrderByPriority()
