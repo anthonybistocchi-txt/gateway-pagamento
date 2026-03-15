@@ -30,8 +30,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('products')->middleware(CheckRole::class.':MANAGER,FINANCE')->group(function () {
         Route::get('/', [ProductController::class, 'index'])->name('products.index'); 
-        Route::post('/', [ProductController::class, 'store'])->name('products.store'); //ok
-        Route::patch('/{id}', [ProductController::class, 'update'])->name('products.update'); //ok
+        Route::post('/', [ProductController::class, 'store'])->name('products.store'); 
+        Route::patch('/{id}', [ProductController::class, 'update'])->name('products.update'); 
         Route::delete('/{id}', [ProductController::class, 'destroy'])->name('products.destroy'); 
     });
 
