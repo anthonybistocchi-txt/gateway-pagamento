@@ -56,7 +56,7 @@ class TransactionStoreRequest extends FormRequest
             'payment_method.in'       => 'payment method must be one of: card_credit, card_debit.',
             'cvv.required_if'         => 'CVV is required when payment method is card_credit or card_debit.',
             'cvv.string'              => 'CVV must be a string.',
-            'cvv.size'                => 'CVV must be exactly 4 characters.',
+            'cvv.size'                => 'CVV must be exactly 3 characters.',
         ];
     }
 }

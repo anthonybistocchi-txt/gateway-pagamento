@@ -12,7 +12,6 @@ class Transaction extends Model
         'amount',
         'status',
         'external_id',
-        'cvv',
         'quantity',
         'card_number',
         'product_id',

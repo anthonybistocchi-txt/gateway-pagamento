@@ -11,12 +11,13 @@ class HeaderAuthGatewayService implements PaymentRepositoryGatewayInterface
     public function processPayment(Transaction $transaction, array $paymentData): bool | array
     {
         $client = $transaction->client;
+    
+        $baseUrl = config('services.gateway_header.url');
 
         $response = Http::withHeaders([
-            'Gateway-Auth-Token'  => env('GATEWAY_AUTH_TOKEN'),
-            'Gateway-Auth-Secret' => env('GATEWAY_AUTH_SECRET')
-
-        ])->post('http://gateways-mock:3002/transacoes', [
+            'Gateway-Auth-Token'  => config('services.gateway_header.token'),
+            'Gateway-Auth-Secret' => config('services.gateway_header.secret'),
+        ])->post("{$baseUrl}/transacoes", [
             'valor'        => $transaction->amount,
             'nome'         => $client->name,
             'email'        => $client->email,
@@ -34,11 +35,12 @@ class HeaderAuthGatewayService implements PaymentRepositoryGatewayInterface
 
     public function refund(Transaction $transaction): bool
     {
-        $response = Http::withHeaders([
-            'Gateway-Auth-Token'  => env('GATEWAY_AUTH_TOKEN'),
-            'Gateway-Auth-Secret' => env('GATEWAY_AUTH_SECRET')                     // testar
+        $baseUrl = config('services.gateway_header.url');
 
-        ])->post('http://gateways-mock:3002/transacoes/reembolso', [
+        $response = Http::withHeaders([
+            'Gateway-Auth-Token'  => config('services.gateway_header.token'),
+            'Gateway-Auth-Secret' => config('services.gateway_header.secret'),
+        ])->post("{$baseUrl}/transacoes/reembolso", [
             'id' => $transaction->external_id 
         ]);
 

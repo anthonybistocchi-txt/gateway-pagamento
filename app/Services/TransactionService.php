@@ -9,6 +9,7 @@ use App\Models\Transaction;
 use App\Services\Gateways\BearerTokenGatewayService;
 use App\Services\Gateways\GatewayConfigurationService;
 use App\Services\Gateways\HeaderAuthGatewayService;
+use Illuminate\Support\Facades\DB;
 
 class TransactionService
 {
@@ -68,8 +69,10 @@ class TransactionService
                     $transaction->external_id = $paymentResponse['id'];
                     $transaction->gateway_id  = $gateway->id;
 
-                    $this->transactionRepository->successTransaction($transaction);
-                    $this->purchaseRepository->store($transaction);
+                    DB::transaction(function () use ($transaction) {
+                        $this->transactionRepository->successTransaction($transaction);
+                        $this->purchaseRepository->store($transaction);
+                    });
 
                     return true;
                 }
@@ -107,9 +110,10 @@ class TransactionService
 
             if ($refundResponse) 
             {
-                $this->transactionRepository->refundTransaction($transaction);
-
-                $this->purchaseRepository->updateRefund($transaction->id);
+                DB::transaction(function () use ($transaction) {
+                    $this->transactionRepository->refundTransaction($transaction);
+                    $this->purchaseRepository->updateRefund($transaction->id);
+                });
                 
                 return true;
             }

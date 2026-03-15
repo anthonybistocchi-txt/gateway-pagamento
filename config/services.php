@@ -35,4 +35,16 @@ return [
         ],
     ],
 
+    'gateway_bearer' => [
+        'url'   => env('GATEWAY_BEARER_URL'),
+        'email' => env('GATEWAY_BEARER_EMAIL'),
+        'token' => env('GATEWAY_BEARER_TOKEN'),
+    ],
+
+    'gateway_header' => [
+        'url'    => env('GATEWAY_HEADER_URL'),
+        'token'  => env('GATEWAY_HEADER_TOKEN'),
+        'secret' => env('GATEWAY_HEADER_SECRET'),
+    ],
+
 ];

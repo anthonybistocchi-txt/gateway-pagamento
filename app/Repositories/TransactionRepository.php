@@ -17,7 +17,6 @@ class TransactionRepository implements TransactionRepositoryInterface
             'amount'         => $requestData['amount'],
             'gateway_id'     =>  $requestData['gateway_id'] ?? 1, 
             'external_id'    =>  null,
-            'cvv'            => $requestData['cvv'],
             'status'         => 'pending',
         ]);
     }

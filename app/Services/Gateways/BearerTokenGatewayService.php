@@ -6,17 +6,17 @@ use App\Interfaces\PaymentRepositoryGatewayInterface;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Http;
 
-
 class BearerTokenGatewayService implements PaymentRepositoryGatewayInterface
 {
     public function processPayment(Transaction $transaction, array $paymentData): bool | array
     {
-        $token = $this->authenticate();
-        
+        $token  = $this->authenticate();
         $client = $transaction->client;
+        
+        $baseUrl = config('services.gateway_bearer.url');
 
         $response = Http::withToken($token)
-            ->post('http://gateways-mock:3001/transactions', [
+            ->post("{$baseUrl}/transactions", [
                 'amount'     => $transaction->amount,
                 'name'       => $client->name,
                 'email'      => $client->email,
@@ -30,29 +30,26 @@ class BearerTokenGatewayService implements PaymentRepositoryGatewayInterface
         }
 
         return $response->json();
-
     }
 
     public function refund(Transaction $transaction): bool
     {
         $token = $this->authenticate();
+        $baseUrl = config('services.gateway_bearer.url');
 
         $response = Http::withToken($token)
-            ->post("http://gateways-mock:3001/transactions/{$transaction->external_id}/charge_back");
+            ->post("{$baseUrl}/transactions/{$transaction->external_id}/charge_back");
 
         return $response->successful();
     }
 
-    public function updatePriority(int $gatewayId, int $priority): void
-    {
-        
-    }
-
     private function authenticate(): string 
     {
-        $response = Http::post('http://gateways-mock:3001/login', [
-            'email' => 'dev@betalent.tech',
-            'token' => 'FEC9BB078BF338F464F96B48089EB498'
+        $baseUrl = config('services.gateway_bearer.url');
+
+        $response = Http::post("{$baseUrl}/login", [
+            'email' => config('services.gateway_bearer.email'),
+            'token' => config('services.gateway_bearer.token')
         ]);
 
         if ($response->failed()) {
