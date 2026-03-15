@@ -10,8 +10,8 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Middleware\CheckRole; 
 use Illuminate\Support\Facades\Route;
 
-Route::post('/login', [AuthController::class, 'login'])->name('login'); // ok
-Route::post('/purchases', [TransactionController::class, 'store'])->name('purchases.store'); // ok
+Route::post('/login', [AuthController::class, 'login'])->name('login'); 
+Route::post('/purchases', [TransactionController::class, 'store'])->name('purchases.store'); 
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -22,27 +22,27 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('users')->middleware(CheckRole::class.':MANAGER')->group(function () {
-        Route::get('/', [UserController::class, 'index'])->name('users.index'); // ok
-        Route::post('/', [UserController::class, 'store'])->name('users.store'); // ok
-        Route::patch('/{id}', [UserController::class, 'update'])->name('users.update'); // ok
-        Route::delete('/{id}', [UserController::class, 'destroy'])->name('users.destroy'); // ok
+        Route::get('/', [UserController::class, 'index'])->name('users.index'); 
+        Route::post('/', [UserController::class, 'store'])->name('users.store'); 
+        Route::patch('/{id}', [UserController::class, 'update'])->name('users.update'); 
+        Route::delete('/{id}', [UserController::class, 'destroy'])->name('users.destroy'); 
     });
 
     Route::prefix('products')->middleware(CheckRole::class.':MANAGER,FINANCE')->group(function () {
-        Route::get('/', [ProductController::class, 'index'])->name('products.index'); // ok
+        Route::get('/', [ProductController::class, 'index'])->name('products.index'); 
         Route::post('/', [ProductController::class, 'store'])->name('products.store'); //ok
         Route::patch('/{id}', [ProductController::class, 'update'])->name('products.update'); //ok
-        Route::delete('/{id}', [ProductController::class, 'destroy'])->name('products.destroy'); // ok
+        Route::delete('/{id}', [ProductController::class, 'destroy'])->name('products.destroy'); 
     });
 
     Route::prefix('clients')->middleware(CheckRole::class.':MANAGER,FINANCE')->group(function () {
-        Route::get('/', [ClientController::class, 'index'])->name('clients.index'); // ok 
-        Route::get('/{id}', [ClientController::class, 'details'])->name('clients.details'); // ok porem testar estorno para ve se atualiza na tabela
+        Route::get('/', [ClientController::class, 'index'])->name('clients.index');  
+        Route::get('/{id}', [ClientController::class, 'details'])->name('clients.details');  
     });
 
     Route::prefix('purchases')->middleware(CheckRole::class.':FINANCE')->group(function () {
-        Route::get('/', [PurchaseController::class, 'index'])->name('purchases.index'); // ok   
-        Route::get('/{id}', [PurchaseController::class, 'details'])->name('purchases.details');  // ok
-        Route::post('/{id}/refund', [TransactionController::class, 'refund'])->name('purchases.refund'); // ok porem testar dnv
+        Route::get('/', [PurchaseController::class, 'index'])->name('purchases.index');    
+        Route::get('/{id}', [PurchaseController::class, 'details'])->name('purchases.details');  
+        Route::post('/{id}/refund', [TransactionController::class, 'refund'])->name('purchases.refund');  
     });
 });
