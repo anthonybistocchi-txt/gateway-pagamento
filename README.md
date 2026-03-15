@@ -1,20 +1,29 @@
-## Pagamento Multi-Gateway
+# API de Pagamento Multi-Gateway
 
-### Visão geral
-API para processamento de pagamentos e gestão de transações/compras com fallback automático entre gateways. Ao criar uma compra, o sistema calcula o valor a partir de produto + quantidade, registra a transação como `pending` e tenta processar em gateways ativos por ordem de prioridade. Em falha, alterna para o próximo gateway; se todos falharem, a transação é marcada como `failed`. Baseado em api.php e lógica de fallback em TransactionService.php.
+> **Visão Geral:** API robusta para processamento de pagamentos e gestão de transações/compras com sistema inteligente de *fallback* automático entre gateways. 
+> 
+> Ao criar uma compra, o sistema calcula o valor total (produto + quantidade), registra a transação como pendente e tenta processá-la nos gateways ativos respeitando a ordem de prioridade. Em caso de falha de um provedor, o sistema alterna automaticamente para o próximo gateway disponível. Se todos falharem, a transação é atualizada com segurança para o status de falha.
 
-### Instalação e setup (passo a passo)
-**Pré-requisitos**
-- PHP 8.2, Composer, Node.js (Vite), Docker/Docker Compose.
-- MySQL 8.0 (via Docker). Baseado em Dockerfile e docker-compose.yml.
+---
 
-**1) Clonar e instalar dependências**
+## ⚙️ Pré-requisitos
+
+Certifique-se de ter os seguintes requisitos instalados em sua máquina:
+* PHP 8.2+
+* Composer
+* Node.js (Vite)
+* Docker e Docker Compose (para o banco de dados MySQL 8.0)
+
+---
+
+## 🛠️ Instalação e Setup (Passo a Passo)
+
+**1. Clone o repositório e instale as dependências**
 ```bash
 git clone <URL_DO_REPOSITORIO>
 cd gateway-pagamentos
 composer install
 npm install
-```
 
 **2) Configurar .env**
 ```bash
@@ -26,12 +35,19 @@ APP_URL=http://localhost:8000
 DB_CONNECTION=mysql
 DB_HOST=db
 DB_PORT=3306
-DB_DATABASE=
-DB_USERNAME=
-DB_PASSWORD=
+DB_DATABASE=betalent_db
+DB_USERNAME=betalent_user
+DB_PASSWORD=secret
 
-GATEWAY_AUTH_TOKEN=<defina um valor>
-GATEWAY_AUTH_SECRET=<defina um valor>
+# Credenciais do Gateway 1 (Bearer Token)
+GATEWAY_BEARER_URL=http://gateways-mock:3001
+GATEWAY_BEARER_EMAIL=dev@betalent.tech
+GATEWAY_BEARER_TOKEN=FEC9BB078BF338F464F96B48089EB498
+
+# Credenciais do Gateway 2 (Header Auth)
+GATEWAY_HEADER_URL=http://gateways-mock:3002
+GATEWAY_HEADER_TOKEN=seu_token_aqui
+GATEWAY_HEADER_SECRET=seu_secret_aqui
 ```
 - `GATEWAY_AUTH_TOKEN` e `GATEWAY_AUTH_SECRET` são usados no gateway com autenticação via header. Veja HeaderAuthGatewayService.php e .env.example.
 - O gateway com bearer token autentica com credenciais fixas no serviço. Veja BearerTokenGatewayService.php.
@@ -59,66 +75,66 @@ npm run dev
 - Para rotas privadas, enviar `Authorization: Bearer <token>`.
 Baseado em AuthService.php.
 
-### Documentação de API (principais endpoints)
+📡 Documentação da API (Endpoints)
+🔓 Rotas Públicas
+POST /login
 
-**Públicos**
-- **POST /login**
-  - Body: `email`, `password`
-  - Respostas: `200` token, `422` credenciais inválidas.
-  - Validação: AuthRequest.php
+Body: email, password
 
-- **POST /purchases**
-  - Body:  
-    `client_id`, `product_id`, `quantity`, `payment_method` (`card_credit|card_debit`),  
-    `card_number` (16 dígitos), `cvv` (3 chars), `name`, `email`
-  - Respostas: `201` criado, `422` validação, `400/500` falha no gateway.
-  - Validação: TransactionStoreRequest.php
+Respostas: 200 (Retorna o Token) | 422 (Credenciais inválidas)
 
-**Privados (auth:sanctum + roles)**
+POST /purchases (Processamento de Compra)
 
-**Gateways (ADMIN)**
-- **PATCH /gateways/{id}/activate**
-- **PATCH /gateways/{id}/deactivate**
-- **PATCH /gateways/{id}/priority**  
-  Body: `priority` (0–100)  
-  Respostas: `200`, `403`, `422`  
-  Validações: GatewayActivateAndDeactivateRequest.php,  
-  GatewayUpdatePriorityRequest.php
+Body: client_id, product_id, quantity, payment_method (card_credit/card_debit), card_number, cvv, name, email
 
-**Usuários (MANAGER, ADMIN)**
-- **GET /users**
-- **POST /users**  
-  Body: `name`, `email`, `password`, `role_id`  
-- **PATCH /users/{id}**  
-  Body: `name?`, `email?`, `password?`, `role_id?`  
-- **DELETE /users/{id}`**  
-  Respostas: `200`, `403`, `422`  
-  Validações: UserStoreRequest.php,  
-  UserUpdateRequest.php
+Respostas: 201 (Sucesso) | 422 (Erro de Validação) | 400/500 (Falha nos Gateways)
 
-**Produtos (MANAGER, FINANCE, ADMIN)**
-- **GET /products**
-- **POST /products**  
-  Body: `name`, `amount` (int, em centavos)
-- **PATCH /products/{id}`**  
-  Body: `name?`, `amount?`
-- **DELETE /products/{id}`**  
-  Respostas: `200`, `403`, `422`  
-  Validações: ProductStoreRequest.php,  
-  ProductUpdateRequest.php
+Nota: O CVV trafega apenas em memória para a integração externa e não é persistido no banco de dados (Compliance PCI-DSS).
 
-**Clientes (MANAGER, FINANCE, ADMIN)**
-- **GET /clients**
-- **GET /clients/{id}`**  
-  Respostas: `200`, `403`, `422`  
-  Validações: ClientIdRequest.php
+🔒 Rotas Privadas (Requer Autenticação)
+⚙️ Gateways (Apenas ADMIN)
 
-**Compras (FINANCE, ADMIN)**
-- **GET /purchases**
-- **GET /purchases/{id}`**
-- **POST /purchases/{id}/refund**  
-  Respostas: `200`, `403`, `422`, `500`  
-  Validação: TransactionRefundRequest.php
+PATCH /gateways/{id}/activate - Ativa um gateway.
+
+PATCH /gateways/{id}/deactivate - Desativa um gateway.
+
+PATCH /gateways/{id}/priority - Altera a prioridade (Executa Swap atômico no banco).
+
+Body: priority (0-100)
+
+👥 Usuários (ADMIN, MANAGER)
+
+GET /users - Lista usuários.
+
+POST /users - Cria usuário (name, email, password, role_id).
+
+PATCH /users/{id} - Atualiza dados do usuário.
+
+DELETE /users/{id} - Remove usuário.
+
+📦 Produtos (ADMIN, MANAGER, FINANCE)
+
+GET /products - Lista produtos.
+
+POST /products - Cria produto (name, amount em centavos).
+
+PATCH /products/{id} - Atualiza produto.
+
+DELETE /products/{id} - Remove produto.
+
+🤝 Clientes (ADMIN, MANAGER, FINANCE)
+
+GET /clients - Lista clientes.
+
+GET /clients/{id} - Detalhes de um cliente específico.
+
+💳 Compras (ADMIN, FINANCE)
+
+GET /purchases - Lista histórico de compras.
+
+GET /purchases/{id} - Detalhes com Nested Relationship (Compra + Transação + Cliente).
+
+POST /purchases/{id}/refund - Executa estorno na API do Gateway e atualiza o banco local de forma atômica.
 
 ### Segurança e roles
 Controle de acesso via middleware `CheckRole`:
@@ -129,9 +145,12 @@ Controle de acesso via middleware `CheckRole`:
 Baseado em CheckRole.php e regras definidas em api.php.
 
 ### Diferenciais técnicos
-- **Arquitetura em camadas** com Controllers → Services → Repositories, separando regra de negócio e acesso a dados. Exemplos em Services e Repositories.
-- **Fallback multi-gateway por prioridade**: o pagamento é tentado em múltiplos gateways ativos, com failover automático e atualização de status. Veja TransactionService.php.
-- **Reembolsos consistentes**: valida status da transação, chama o gateway correto e atualiza compra/transação. Veja TransactionService.php e PurchaseRepository.php.
-- **Validações fortes de request** com Form Requests, garantindo payloads corretos e respostas 422 para dados inválidos.
+Arquitetura em Camadas (Clean Code): Utilização robusta de Controllers, Services e Repositories, garantindo a separação absoluta entre regras de negócio e manipulação de dados (Eloquent).
 
-Se quiser, posso entregar a mesma estrutura já aplicada dentro do README.md ou como corpo de PR com formatação específica.
+Integração Externa Componentizada: Implementação de contratos (Interfaces) para os serviços de Gateway, facilitando a troca e adição de novos provedores de pagamento sem alterar o core da aplicação.
+
+Transações Atômicas (ACID): Uso intensivo de DB::transaction em operações críticas (Criação de Compras, Estornos e Swap de Prioridades), garantindo integridade financeira e prevenindo inconsistências de dados.
+
+Validação Blindada: Uso de Form Requests personalizados em todas as entradas de dados, retornando erros 422 padronizados de forma automática.
+
+Segurança Reforçada: Extração de credenciais hardcoded para variáveis de ambiente e exclusão de dados sensíveis de pagamento da camada de persistência.
