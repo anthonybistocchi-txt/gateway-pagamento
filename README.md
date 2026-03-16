@@ -4,7 +4,7 @@
 > 
 > Ao criar uma compra, o sistema calcula o valor total (produto + quantidade), registra a transação como pendente e tenta processá-la nos gateways ativos respeitando a ordem de prioridade. Em caso de falha de um provedor, o sistema alterna automaticamente para o próximo gateway disponível. Se todos falharem, a transação é atualizada com segurança para o status de falha.
 
-Este projeto atende ao nivel 2 do teste prático da BeTalent Tech.
+Este projeto atende ao nivel 2 do teste prático da BeTalent Tech, porém eu quis adicionar validação por roles do nivel 3.
 ---
 
 ## ⚙️ Pré-requisitos
