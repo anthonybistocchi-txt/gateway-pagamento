@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -13,11 +14,7 @@ class AuthService
         $user = User::where('email', $credentials['email'])->first();
 
        if (!$user || !Hash::check($credentials['password'], $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => [
-                    'The provided credentials are incorrect.'
-                ],
-            ]);
+            throw new Exception('invalid credentials', 401);
         }
 
         $user->tokens()->delete();
