@@ -31,5 +31,12 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <!-- URLs usados por Http::fake nos testes de compra (evita base URL vazia no config) -->
+        <env name="GATEWAY_BEARER_URL" value="https://bearer-gateway.test"/>
+        <env name="GATEWAY_BEARER_EMAIL" value="test@example.com"/>
+        <env name="GATEWAY_BEARER_TOKEN" value="test-token"/>
+        <env name="GATEWAY_HEADER_URL" value="https://header-gateway.test"/>
+        <env name="GATEWAY_HEADER_TOKEN" value="header-token"/>
+        <env name="GATEWAY_HEADER_SECRET" value="header-secret"/>
     </php>
 </phpunit>
