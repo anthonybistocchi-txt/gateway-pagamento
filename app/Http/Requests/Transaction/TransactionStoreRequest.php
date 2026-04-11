@@ -22,6 +22,7 @@ class TransactionStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'payment_key'    => 'required|uuid',
             'card_number'    => 'required_if:payment_method,card_credit,card_debit|digits:16|string',
             'name'           => 'required|string',
             'email'          => 'required|email',
@@ -36,6 +37,8 @@ class TransactionStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'payment_key.required'    => 'payment_key is required for idempotent requests.',
+            'payment_key.uuid'        => 'payment_key must be a valid UUID.',
             'card_number.required_if' => 'Card number is required when payment method is card_credit or card_debit.',
             'card_number.digits'      => 'Card number must be exactly 16 digits.',
             'card_number.string'      => 'Card number must be a string.',

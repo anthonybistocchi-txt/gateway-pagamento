@@ -16,6 +16,7 @@ class Transaction extends Model
         'card_number',
         'product_id',
         'payment_method',
+        'payment_key',
     ];
 
     public function client()

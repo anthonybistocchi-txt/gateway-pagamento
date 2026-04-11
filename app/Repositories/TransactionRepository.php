@@ -15,10 +15,19 @@ class TransactionRepository implements TransactionRepositoryInterface
             'payment_method' => $requestData['payment_method'],
             'product_id'     => $requestData['product_id'],
             'amount'         => $requestData['amount'],
-            'gateway_id'     =>  $requestData['gateway_id'] ?? 1, 
-            'external_id'    =>  null,
+            'gateway_id'     => $requestData['gateway_id'] ?? 1,
+            'external_id'    => null,
             'status'         => 'pending',
+            'payment_key'    => $requestData['payment_key'],
         ]);
+    }
+
+    public function findByClientAndPaymentKey(int $clientId, string $paymentKey): ?Transaction
+    {
+        return Transaction::query()
+            ->where('client_id', $clientId)
+            ->where('payment_key', $paymentKey)
+            ->first();
     }
 
     public function successTransaction(Transaction $transaction): bool

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('client_id')->constrained()->onDelete('cascade');
             $table->foreignId('gateway_id')->constrained()->onDelete('cascade');
             $table->string('external_id')->nullable();
+            $table->uuid('payment_key')->unique();
             $table->enum('status', ['pending', 'completed', 'failed','refunded'])->default('pending');
             $table->decimal('amount', 10, 2);
             $table->string('quantity')->nullable();

@@ -9,25 +9,19 @@ use Illuminate\Http\JsonResponse;
 
 class TransactionController extends Controller
 {
-    public function __construct(protected TransactionService $transactionService){}
-    
+    public function __construct(protected TransactionService $transactionService) {}
+
     public function store(TransactionStoreRequest $request): JsonResponse
     {
-        $this->transactionService->store($request->validated());
+        $result = $this->transactionService->store($request->validated());
 
-        return response()->json([
-                'status'  => true,
-                'message' => 'Transaction created successfully.'
-        ], 201);
+        return response()->json($result->payload, $result->httpStatus);
     }
 
     public function refund(TransactionRefundRequest $request): JsonResponse
     {
-        $this->transactionService->processRefund($request->validated()['id']);
+        $result = $this->transactionService->processRefund($request->validated()['id']);
 
-        return response()->json([
-                'status'  => true,
-                'message' => 'Refund processed successfully.'
-        ], 200);
+        return response()->json($result->payload, $result->httpStatus);
     }
 }
