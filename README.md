@@ -120,12 +120,12 @@ DB_USERNAME=betalent_user
 DB_PASSWORD=secret
 
 # Credenciais do Gateway 1 (Bearer Token)
-GATEWAY_BEARER_URL=http://gateways-mock:3001
-GATEWAY_BEARER_EMAIL=dev@betalent.tech
-GATEWAY_BEARER_TOKEN=FEC9BB078BF338F464F96B48089EB498
+GATEWAY_BEARER_URL=sua_url_aqui
+GATEWAY_BEARER_EMAIL=email_betalent
+GATEWAY_BEARER_TOKEN=bearer_token_aqui
 
 # Credenciais do Gateway 2 (Header Auth)
-GATEWAY_HEADER_URL=http://gateways-mock:3002
+GATEWAY_HEADER_URL=sua_url_aqui
 GATEWAY_HEADER_TOKEN=seu_token_aqui
 GATEWAY_HEADER_SECRET=seu_secret_aqui
 ```
